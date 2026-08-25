@@ -1,0 +1,9 @@
+metric,value,unit
+frames_processed,300,frames
+video_duration,12.46,seconds
+unique_car_tracks,44,tracks
+unique_person_tracks,6,tracks
+person_crossings_up,1,crossings
+person_crossings_down,3,crossings
+average_frame_occupancy,3.416,percent
+peak_frame_occupancy,7.993,percent

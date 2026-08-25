@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="430" viewBox="0 0 900 430" role="img" aria-labelledby="title desc">
+  <title id="title">Traffic monitoring demo summary</title>
+  <desc id="desc">Horizontal bars show 44 unique car tracks, 6 unique person tracks, 1 upward person crossing, and 3 downward person crossings across 300 video frames.</desc>
+  <rect width="900" height="430" rx="18" fill="#0f172a"/>
+  <text x="55" y="55" fill="#f8fafc" font-family="Arial, sans-serif" font-size="27" font-weight="700">Real-traffic monitoring demo</text>
+  <text x="55" y="85" fill="#94a3b8" font-family="Arial, sans-serif" font-size="16">YOLO11m • 300 frames • track and line-crossing counts</text>
+
+  <line x1="250" y1="115" x2="250" y2="360" stroke="#334155" stroke-width="2"/>
+  <line x1="250" y1="360" x2="760" y2="360" stroke="#334155" stroke-width="2"/>
+
+  <text x="55" y="157" fill="#e2e8f0" font-family="Arial, sans-serif" font-size="18">Unique car tracks</text>
+  <rect x="250" y="132" width="440" height="36" rx="7" fill="#38bdf8"/>
+  <text x="702" y="157" fill="#f8fafc" font-family="Arial, sans-serif" font-size="20" font-weight="700">44</text>
+
+  <text x="55" y="217" fill="#e2e8f0" font-family="Arial, sans-serif" font-size="18">Unique person tracks</text>
+  <rect x="250" y="192" width="60" height="36" rx="7" fill="#a78bfa"/>
+  <text x="322" y="217" fill="#f8fafc" font-family="Arial, sans-serif" font-size="20" font-weight="700">6</text>
+
+  <text x="55" y="277" fill="#e2e8f0" font-family="Arial, sans-serif" font-size="18">Person crossings up</text>
+  <rect x="250" y="252" width="10" height="36" rx="5" fill="#34d399"/>
+  <text x="272" y="277" fill="#f8fafc" font-family="Arial, sans-serif" font-size="20" font-weight="700">1</text>
+
+  <text x="55" y="337" fill="#e2e8f0" font-family="Arial, sans-serif" font-size="18">Person crossings down</text>
+  <rect x="250" y="312" width="30" height="36" rx="7" fill="#fb7185"/>
+  <text x="292" y="337" fill="#f8fafc" font-family="Arial, sans-serif" font-size="20" font-weight="700">3</text>
+
+  <text x="250" y="390" fill="#64748b" font-family="Arial, sans-serif" font-size="14">Bar scale: 10 px per count</text>
+  <text x="760" y="390" text-anchor="end" fill="#94a3b8" font-family="Arial, sans-serif" font-size="14">Average occupancy 3.42% • Peak 7.99%</text>
+</svg>

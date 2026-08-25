@@ -1,0 +1,3 @@
+model,precision,recall,map50,map50_95,inference_ms_per_image,notes
+YOLO11s,0.744,0.161,0.202,0.139,16.4,T4 validation
+YOLO11m,0.836,0.181,0.335,0.224,26.0,T4 validation and selected demo checkpoint
