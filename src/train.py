@@ -17,6 +17,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--batch", type=int, default=16)
     parser.add_argument("--device", default=None, help="CUDA device (for example 0) or cpu")
     parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--patience", type=int, default=20, help="Early-stopping patience")
+    parser.add_argument("--workers", type=int, default=8)
+    parser.add_argument("--cache", action="store_true", help="Cache dataset images in memory")
     parser.add_argument("--project", default=None, help="Optional output directory")
     parser.add_argument("--name", default="custom_detector")
     return parser.parse_args()
@@ -35,6 +38,9 @@ def main() -> None:
         batch=args.batch,
         device=args.device,
         seed=args.seed,
+        patience=args.patience,
+        workers=args.workers,
+        cache=args.cache,
         project=args.project,
         name=args.name,
         exist_ok=True,
