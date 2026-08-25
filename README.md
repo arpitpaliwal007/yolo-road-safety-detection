@@ -87,10 +87,6 @@ For a webcam, use `--source 0`. Add `--show` to display predictions while runnin
 - Dataset images, labels, checkpoints, and experiment outputs are ignored by Git.
 - Record the final model version, dataset version, mAP, and precision/recall in your résumé or project portfolio after training.
 
-## Suggested résumé bullet
-
-> Built an end-to-end road-safety object-detection pipeline using Ultralytics YOLO, including automated COCO data filtering/remapping, transfer learning, mAP evaluation, and real-time image/video inference.
-
 ## License
 
 This repository is available under the MIT License. Check the [Ultralytics license](https://www.ultralytics.com/license) before commercial use of its models or software.
