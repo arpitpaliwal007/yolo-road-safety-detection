@@ -1,18 +1,33 @@
-# YOLO Custom Object Detection
+# YOLO Road-Safety Traffic Monitor
 
-A complete road-safety object-detection project using **Ultralytics YOLO**. It builds a compact, repeatable six-class dataset from COCO128, then trains, evaluates, and runs inference with a fine-tuned detector.
+An end-to-end computer-vision project that detects, tracks, and counts road users and vehicles, then estimates traffic density from images, videos, or a webcam.
 
-## Highlights
+## Capabilities
 
-- Prepare a six-class road-safety dataset (person, bicycle, car, motorcycle, bus, truck)
-- Fine-tune a pretrained YOLO model and evaluate mAP metrics
-- Run inference on images, folders, videos, or a webcam
-- Save annotated predictions and export standard evaluation metrics
-- Keep large datasets and model checkpoints out of Git
+- Detect six classes: person, bicycle, car, motorcycle, bus, and truck
+- Fine-tune YOLO11 on a custom YOLO-format dataset
+- Compare YOLO11n, YOLO11s, and YOLO11m under the same experiment settings
+- Report overall and per-class precision, recall, mAP@50, and mAP@50–95
+- Track objects with ByteTrack or BoT-SORT
+- Count class-wise crossings in both directions across a configurable line
+- Estimate low, moderate, or high traffic density using visible frame occupancy
+- Save annotated videos and a CSV event log
+- Run an interactive Streamlit image/video demo
 
-## Tech stack
+No ONNX export is included in this project.
 
-Python · Ultralytics YOLO · PyTorch · OpenCV · YAML · Apple Silicon (MPS) support
+## System flow
+
+```mermaid
+flowchart LR
+    A["Road images or video"] --> B["YOLO11 detector"]
+    B --> C["ByteTrack / BoT-SORT"]
+    C --> D["Line-crossing counter"]
+    C --> E["Traffic-density estimator"]
+    D --> F["Annotated video + event CSV"]
+    E --> F
+    B --> G["Precision, recall and mAP reports"]
+```
 
 ## Quick start
 
@@ -20,73 +35,88 @@ Python · Ultralytics YOLO · PyTorch · OpenCV · YAML · Apple Silicon (MPS) s
 python -m venv .venv
 source .venv/bin/activate              # Windows: .venv\\Scripts\\activate
 pip install -r requirements.txt
-```
-
-Or, with Conda:
-
-```bash
-conda env create -f environment.yml
-conda activate yolo-resume
-```
-
-Prepare the dataset (downloads the compact public COCO128 sample, filters it, and remaps labels):
-
-```bash
 python src/prepare_dataset.py
 ```
 
-The generated data is YOLO formatted:
+The included COCO128-derived dataset is only a smoke-test dataset. See [data/README.md](data/README.md) before claiming model quality.
+
+## Train and evaluate
+
+```bash
+python src/train.py --data data/dataset.yaml --model yolo11s.pt --epochs 100 --imgsz 640 --batch 16 --name road_safety_yolo11s
+python src/validate.py --model runs/detect/road_safety_yolo11s/weights/best.pt --data data/dataset.yaml
+```
+
+Evaluation writes:
+
+- `runs/evaluation/summary.json`
+- `runs/evaluation/per_class_metrics.csv`
+- Ultralytics confusion matrices and precision/recall plots
+
+## Compare YOLO model sizes
+
+```bash
+python src/compare_models.py \
+  --models yolo11n.pt yolo11s.pt yolo11m.pt \
+  --data data/dataset.yaml \
+  --epochs 50 \
+  --device 0
+```
+
+The comparison CSV records model parameters, checkpoint size, precision, recall, both mAP measures, and inference latency.
+
+## Monitor traffic video
+
+```bash
+python src/traffic_monitor.py \
+  --model runs/detect/road_safety_yolo11s/weights/best.pt \
+  --source traffic.mp4 \
+  --output runs/traffic_monitor/annotated.mp4 \
+  --device 0
+```
+
+Use `--line-position 0.6` to move the counting line, `--tracker botsort.yaml` to change trackers, and `--source 0` for a webcam.
+
+## Interactive demo
+
+```bash
+streamlit run app.py
+```
+
+Upload an image for detection or a video for tracking, bidirectional counting, traffic-density measurement, annotated-video download, and CSV event export.
+
+## Google Colab
+
+Follow [COLAB.md](COLAB.md) for GPU training, model comparison, video monitoring, and saving outputs permanently to Google Drive.
+
+## Current results
+
+The original three-epoch smoke test reached mAP50–95 of `0.0313`. A later 50-epoch T4 Colab run reached approximately `0.10`. These figures confirm that the pipeline runs; the small filtered dataset is the main performance limitation. Published plots and tables are in [results/](results/).
+
+## Project structure
 
 ```text
-data/
-├── images/
-│   ├── train/
-│   └── val/
-└── labels/
-    ├── train/
-    └── val/
+├── app.py                      # Streamlit interface
+├── src/
+│   ├── prepare_dataset.py      # Reproducible demo-data preparation
+│   ├── dataset_report.py       # Dataset balance report
+│   ├── train.py                # Fine-tuning
+│   ├── validate.py             # Overall and per-class evaluation
+│   ├── compare_models.py       # Fair model-size comparison
+│   ├── predict.py              # Standard inference
+│   └── traffic_monitor.py      # Tracking, counting and density engine
+├── data/                       # Dataset configuration and guide
+├── results/                    # Curated experiment evidence
+└── tests/                      # Monitoring-logic tests
 ```
 
-Each label file has one object per line:
+## Limitations
 
-```text
-<class_id> <x_center> <y_center> <width> <height>
-```
-
-All coordinates are normalized to values from 0 to 1.
-
-## Train
-
-```bash
-python src/train.py --data data/dataset.yaml --model yolo11n.pt --epochs 50 --imgsz 640
-```
-
-Results, charts, and the best checkpoint are saved under `runs/detect/`.
-
-## Demo result
-
-The included 3-epoch Apple Silicon baseline uses 102 training images and 26 validation images at 320px. It reached **mAP50-95: 0.0313**. This is a smoke-test baseline, not a production-quality accuracy claim; train for more epochs on a substantially larger, independently labelled dataset before using it for safety decisions.
-
-## Validate
-
-```bash
-python src/validate.py --model runs/detect/custom_detector/weights/best.pt --data data/dataset.yaml
-```
-
-## Predict
-
-```bash
-python src/predict.py --model runs/detect/custom_detector/weights/best.pt --source path/to/image.jpg
-```
-
-For a webcam, use `--source 0`. Add `--show` to display predictions while running.
-
-## Reproducibility notes
-
-- The training seed defaults to `42` and can be overridden with `--seed`.
-- Dataset images, labels, checkpoints, and experiment outputs are ignored by Git.
-- Record the final model version, dataset version, mAP, and precision/recall in your résumé or project portfolio after training.
+- COCO128 is too small and imbalanced for a reliable safety system.
+- Occupancy is a camera-view proxy for traffic density, not physical road occupancy.
+- Line crossing depends on stable tracking and an appropriate camera angle.
+- The system must be validated on footage from its intended deployment environment.
 
 ## License
 
-This repository is available under the MIT License. Check the [Ultralytics license](https://www.ultralytics.com/license) before commercial use of its models or software.
+Project code is available under the MIT License. Review the Ultralytics licensing terms before commercial use.
